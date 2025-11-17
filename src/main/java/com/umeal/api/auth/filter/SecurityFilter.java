@@ -8,12 +8,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -36,11 +39,19 @@ public class SecurityFilter extends OncePerRequestFilter {
             var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado no filtro"));
 
+            GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
+
+            UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                List.of(authority)
+            );
+
 
             var authentication = new UsernamePasswordAuthenticationToken(
-                user,
+                userDetails,
                 null,
-                java.util.Collections.emptyList()
+                userDetails.getAuthorities()
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -1,7 +1,10 @@
 package com.umeal.api.user.service;
 
 import com.umeal.api.exception.user.EmailAlreadyExistsException;
+import com.umeal.api.exception.user.UserNotFoundException;
 import com.umeal.api.user.dto.UserCreateDTO;
+import com.umeal.api.user.dto.UserResponseDTO;
+import com.umeal.api.user.dto.UserUpdateDTO;
 import com.umeal.api.user.model.User;
 import com.umeal.api.user.model.UserRole;
 import com.umeal.api.user.repository.UserRepository;
@@ -26,6 +29,15 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    private UserResponseDTO mapToUserResponseDTO(User user) {
+        UserResponseDTO responseDTO = new UserResponseDTO();
+        responseDTO.setId(user.getId());
+        responseDTO.setName(user.getName());
+        responseDTO.setEmail(user.getEmail());
+        responseDTO.setRole(user.getRole());
+        return responseDTO;
+    }
 
     @Transactional
     public User registerUser(UserCreateDTO userCreateDTO) {
@@ -58,5 +70,25 @@ public class UserService implements UserDetailsService {
             user.getPassword(),
             List.of(authority)
         );
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponseDTO getUserProfile(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException("Usuário", email));
+        
+        return mapToUserResponseDTO(user);
+    }
+
+    @Transactional
+    public UserResponseDTO updateUserProfile(String email, UserUpdateDTO updateDTO) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException("Usuário", email));
+
+        user.setName(updateDTO.getName());
+
+        User updatedUser = userRepository.save(user);
+        
+        return mapToUserResponseDTO(updatedUser);
     }
 }
