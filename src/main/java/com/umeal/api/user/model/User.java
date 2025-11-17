@@ -6,6 +6,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+import com.umeal.api.address.model.Address;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -45,4 +49,7 @@ public class User {
     protected void onUpdated() {
         updatedAt = LocalDateTime.now();
     }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Address> addresses = new ArrayList<>();
 }
