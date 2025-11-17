@@ -4,10 +4,15 @@ import com.umeal.api.restaurant.dto.RestaurantCreateDTO;
 import com.umeal.api.restaurant.dto.RestaurantResponseDTO;
 import com.umeal.api.restaurant.service.RestaurantService;
 import jakarta.validation.Valid;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,5 +35,19 @@ public class RestaurantController {
         RestaurantResponseDTO savedRestaurantDTO = restaurantService.createRestaurant(dto, ownerEmail);
 
         return new ResponseEntity<>(savedRestaurantDTO, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<RestaurantResponseDTO>> getAllRestaurants() {
+        List<RestaurantResponseDTO> restaurants = restaurantService.listAllRestaurants();
+        return ResponseEntity.ok(restaurants);
+    }
+
+
+    @GetMapping("/{restaurantId}")
+    public ResponseEntity<RestaurantResponseDTO> getRestaurantById(
+            @PathVariable Long restaurantId) {
+        RestaurantResponseDTO restaurant = restaurantService.getRestaurantDetails(restaurantId);
+        return ResponseEntity.ok(restaurant);
     }
 }

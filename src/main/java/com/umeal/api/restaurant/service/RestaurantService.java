@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -105,6 +106,23 @@ public class RestaurantService {
         Restaurant savedRestaurant = restaurantRepository.save(newRestaurant);
 
         return mapToRestaurantResponseDTO(savedRestaurant);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RestaurantResponseDTO> listAllRestaurants() {
+        return restaurantRepository.findAll()
+                .stream()
+                .map(this::mapToRestaurantResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    @Transactional(readOnly = true)
+    public RestaurantResponseDTO getRestaurantDetails(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurante", restaurantId));
+        
+        return mapToRestaurantResponseDTO(restaurant);
     }
 
 }
