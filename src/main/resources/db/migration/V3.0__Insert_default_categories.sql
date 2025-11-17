@@ -13,4 +13,4 @@ INSERT INTO category (name) VALUES
 ('Padaria'),
 ('Bebidas'),
 ('Saudável'),
-('Vegetariana');
+('Vegetariana') ON CONFLICT DO NOTHING;

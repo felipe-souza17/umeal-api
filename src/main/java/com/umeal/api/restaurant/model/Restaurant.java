@@ -3,11 +3,14 @@ package com.umeal.api.restaurant.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.umeal.api.address.model.Address;
 import com.umeal.api.category.model.Category;
+import com.umeal.api.product.model.Product;
 import com.umeal.api.user.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,6 +52,14 @@ public class Restaurant {
         inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<Category> categories = new HashSet<>();
+
+    @OneToMany(
+        mappedBy = "restaurant",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    private List<Product> products = new ArrayList<>();
 
 
     @PrePersist
