@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import org.springframework.security.core.AuthenticationException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -30,6 +32,17 @@ public class GlobalExceptionHandler {
                                 .get(0)
                                 .getDefaultMessage();
         return new ApiErrorResponse("INVALID_FIELD", errorMessage);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiErrorResponse handleAuthenticationException(AuthenticationException ex) {
+        logger.warn("Falha na autenticação: {}", ex.getMessage());
+        
+        return new ApiErrorResponse(
+            "INVALID_CREDENTIALS",
+            "E-mail ou senha inválidos."
+        );
     }
 
 
