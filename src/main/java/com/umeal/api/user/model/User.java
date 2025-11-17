@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import com.umeal.api.address.model.Address;
+import com.umeal.api.order.model.Order;
 import com.umeal.api.restaurant.model.Restaurant;
 
 @Data
@@ -56,4 +57,7 @@ public class User {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Restaurant> ownedRestaurants = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Order> orders = new ArrayList<>();
 }

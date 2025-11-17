@@ -3,6 +3,7 @@ package com.umeal.api.restaurant.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.umeal.api.address.model.Address;
 import com.umeal.api.category.model.Category;
+import com.umeal.api.order.model.Order;
 import com.umeal.api.product.model.Product;
 import com.umeal.api.user.model.User;
 import jakarta.persistence.*;
@@ -61,6 +62,8 @@ public class Restaurant {
     )
     private List<Product> products = new ArrayList<>();
 
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
+    private List<Order> receivedOrders = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
