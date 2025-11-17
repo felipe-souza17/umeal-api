@@ -1,6 +1,7 @@
 package com.umeal.api.address.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.umeal.api.restaurant.model.Restaurant;
 import com.umeal.api.user.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -35,7 +36,6 @@ public class Address {
     @Column(nullable = false, length = 9)
     private String zipCode;
 
-    // Precisamos da precisão e escala para o banco
     @Column(nullable = false, precision = 10, scale = 8)
     private BigDecimal latitude;
 
@@ -44,6 +44,9 @@ public class Address {
 
     @JsonIgnore 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne(mappedBy = "address", fetch = FetchType.LAZY)
+    private Restaurant restaurant;
 }

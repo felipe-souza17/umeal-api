@@ -1,0 +1,16 @@
+INSERT INTO category (name) VALUES
+('Japonesa'),
+('Brasileira'),
+('Pizza'),
+('Hambúrguer'),
+('Italiana'),
+('Árabe'),
+('Chinesa'),
+('Mexicana'),
+('Lanches'),
+('Açaí'),
+('Sobremesas'),
+('Padaria'),
+('Bebidas'),
+('Saudável'),
+('Vegetariana');
