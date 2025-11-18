@@ -147,4 +147,33 @@ public class OrderService {
         
         return mapToOrderResponseDTO(savedOrder);
     }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponseDTO> getOrdersForUser(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário", userEmail));
+
+
+        List<Order> orders = orderRepository.findByUserId(user.getId());
+
+        return orders.stream()
+                .map(this::mapToOrderResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponseDTO> getOrdersForRestaurant(Long restaurantId, String ownerEmail) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurante", restaurantId));
+
+        if (!restaurant.getOwner().getEmail().equals(ownerEmail)) {
+            throw new AccessForbiddenException("Você não tem permissão para ver os pedidos deste restaurante.");
+        }
+
+        List<Order> orders = orderRepository.findByRestaurantId(restaurantId);
+
+        return orders.stream()
+                .map(this::mapToOrderResponseDTO)
+                .collect(Collectors.toList());
+    }
 }

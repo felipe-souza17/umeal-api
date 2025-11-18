@@ -1,5 +1,7 @@
 package com.umeal.api.restaurant.controller;
 
+import com.umeal.api.order.dto.OrderResponseDTO;
+import com.umeal.api.order.service.OrderService;
 import com.umeal.api.restaurant.dto.RestaurantCreateDTO;
 import com.umeal.api.restaurant.dto.RestaurantResponseDTO;
 import com.umeal.api.restaurant.service.RestaurantService;
@@ -25,6 +27,9 @@ public class RestaurantController {
     @Autowired
     private RestaurantService restaurantService;
 
+    @Autowired
+    private OrderService orderService;
+
     @PostMapping
     public ResponseEntity<RestaurantResponseDTO> createRestaurant(
             @Valid @RequestBody RestaurantCreateDTO dto,
@@ -49,5 +54,15 @@ public class RestaurantController {
             @PathVariable Long restaurantId) {
         RestaurantResponseDTO restaurant = restaurantService.getRestaurantDetails(restaurantId);
         return ResponseEntity.ok(restaurant);
+    }
+
+    @GetMapping("/{restaurantId}/orders")
+    public ResponseEntity<List<OrderResponseDTO>> getOrdersForRestaurant(
+            @PathVariable Long restaurantId,
+            Authentication authentication) {
+        
+        String ownerEmail = authentication.getName();
+        List<OrderResponseDTO> orders = orderService.getOrdersForRestaurant(restaurantId, ownerEmail);
+        return ResponseEntity.ok(orders);
     }
 }

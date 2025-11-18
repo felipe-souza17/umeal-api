@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/restaurants/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/restaurants").hasRole("RESTAURANT_OWNER")
+                        .requestMatchers(HttpMethod.GET, "/api/restaurants/{id}/orders").hasRole("RESTAURANT_OWNER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
