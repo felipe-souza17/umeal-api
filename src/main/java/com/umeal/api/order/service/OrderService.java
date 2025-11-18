@@ -176,4 +176,22 @@ public class OrderService {
                 .map(this::mapToOrderResponseDTO)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public OrderResponseDTO updateOrderStatus(Long orderId, OrderStatus newStatus, String ownerEmail) {
+        
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido", orderId));
+
+        if (!order.getRestaurant().getOwner().getEmail().equals(ownerEmail)) {
+            throw new AccessForbiddenException("Você não tem permissão para atualizar este pedido.");
+        }
+        
+        order.setStatus(newStatus);
+        
+        Order savedOrder = orderRepository.save(order);
+
+
+        return mapToOrderResponseDTO(savedOrder);
+    }
 }
