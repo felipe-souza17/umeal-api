@@ -2,15 +2,19 @@ package com.umeal.api.address.service;
 
 import com.umeal.api.address.dto.AddressCreateDTO;
 import com.umeal.api.address.dto.AddressResponseDTO;
+import com.umeal.api.address.dto.ViaCepResponseDTO;
 import com.umeal.api.address.model.Address;
 import com.umeal.api.address.repository.AddressRepository;
 import com.umeal.api.exception.AccessForbiddenException;
+import com.umeal.api.exception.BusinessException;
 import com.umeal.api.exception.ResourceNotFoundException;
 import com.umeal.api.user.model.User;
 import com.umeal.api.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +27,9 @@ public class AddressService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private RestTemplate restTemplate;
 
     private AddressResponseDTO mapToAddressResponseDTO(Address address) {
         AddressResponseDTO dto = new AddressResponseDTO();
@@ -110,5 +117,28 @@ public class AddressService {
         Address address = findAddressAndCheckOwnership(addressId, user.getId());
 
         addressRepository.delete(address);
+    }
+
+    @Transactional(readOnly = true)
+    public ViaCepResponseDTO getAddressFromViaCep(String cep) {
+
+        String cleanCep = cep.replaceAll("[^0-9]", "");
+        
+        String url = "https://viacep.com.br/ws/" + cleanCep + "/json/";
+
+        try {
+
+            ViaCepResponseDTO response = restTemplate.getForObject(url, ViaCepResponseDTO.class);
+
+        
+            if (response != null && response.isErro()) {
+                throw new ResourceNotFoundException("CEP", cep);
+            }
+            
+            return response;
+            
+        } catch (HttpClientErrorException.BadRequest e) {
+            throw new BusinessException("Formato de CEP inválido.");
+        }
     }
 }

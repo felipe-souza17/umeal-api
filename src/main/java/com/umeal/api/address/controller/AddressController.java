@@ -2,6 +2,7 @@ package com.umeal.api.address.controller;
 
 import com.umeal.api.address.dto.AddressCreateDTO;
 import com.umeal.api.address.dto.AddressResponseDTO;
+import com.umeal.api.address.dto.ViaCepResponseDTO;
 import com.umeal.api.address.service.AddressService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,12 @@ public class AddressController {
         String email = authentication.getName();
         List<AddressResponseDTO> addresses = addressService.getAddressesForUser(email);
         return ResponseEntity.ok(addresses);
+    }
+
+    @GetMapping("/cep/{cep}")
+    public ResponseEntity<ViaCepResponseDTO> getAddressByCep(@PathVariable String cep) {
+        ViaCepResponseDTO addressInfo = addressService.getAddressFromViaCep(cep);
+        return ResponseEntity.ok(addressInfo);
     }
 
     @PutMapping("/{addressId}")
