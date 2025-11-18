@@ -19,9 +19,22 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
-        User savedUser = userService.registerUser(userCreateDTO);
+    @PostMapping("/register-client")
+    public ResponseEntity<UserResponseDTO> registerClient(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+        User savedUser = userService.registerClient(userCreateDTO);
+        
+        UserResponseDTO responseDTO = new UserResponseDTO();
+        responseDTO.setId(savedUser.getId());
+        responseDTO.setName(savedUser.getName());
+        responseDTO.setEmail(savedUser.getEmail());
+        responseDTO.setRole(savedUser.getRole());
+        
+        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/register-owner")
+    public ResponseEntity<UserResponseDTO> registerOwner(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+        User savedUser = userService.registerOwner(userCreateDTO);
         
         UserResponseDTO responseDTO = new UserResponseDTO();
         responseDTO.setId(savedUser.getId());

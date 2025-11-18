@@ -39,8 +39,16 @@ public class UserService implements UserDetailsService {
         return responseDTO;
     }
 
+    public User registerClient(UserCreateDTO userCreateDTO) {
+        return registerUser(userCreateDTO, UserRole.CLIENT);
+    }
+
+    public User registerOwner(UserCreateDTO userCreateDTO) {
+        return registerUser(userCreateDTO, UserRole.RESTAURANT_OWNER);
+    }
+
     @Transactional
-    public User registerUser(UserCreateDTO userCreateDTO) {
+    public User registerUser(UserCreateDTO userCreateDTO, UserRole role) {
         String email = userCreateDTO.getEmail();
         if (userRepository.findByEmail(email).isPresent()) {
             throw new EmailAlreadyExistsException();
@@ -51,7 +59,7 @@ public class UserService implements UserDetailsService {
         newUser.setName(userCreateDTO.getName());
         newUser.setEmail(email);
         newUser.setPassword(encryptedPassword);
-        newUser.setRole(UserRole.CLIENT);
+        newUser.setRole(role);
 
         return userRepository.save(newUser);
     }
