@@ -10,17 +10,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 
-// Vamos usar duas bases de rota nesta classe
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Produtos", description = "Endpoints para gerenciamento de produtos.")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
     @PostMapping("/restaurants/{restaurantId}/products")
+    @Operation(summary = "Cria um novo produto", description = "Rota protegida para criar um novo produto.")
     public ResponseEntity<ProductResponseDTO> createProduct(
             @PathVariable Long restaurantId,
             @Valid @RequestBody ProductCreateDTO dto,
@@ -32,6 +36,7 @@ public class ProductController {
     }
 
     @GetMapping("/restaurants/{restaurantId}/products")
+    @Operation(summary = "Lista produtos de um restaurante", description = "Rota pública para listar produtos de um restaurante específico.")
     public ResponseEntity<List<ProductResponseDTO>> getProductsFromRestaurant(
             @PathVariable Long restaurantId) {
         
@@ -40,6 +45,7 @@ public class ProductController {
     }
 
     @PutMapping("/products/{productId}")
+    @Operation(summary = "Atualiza um produto", description = "Rota protegida para atualizar um produto.")
     public ResponseEntity<ProductResponseDTO> updateProduct(
             @PathVariable Long productId,
             @Valid @RequestBody ProductCreateDTO dto,
@@ -51,6 +57,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/products/{productId}")
+    @Operation(summary = "Deleta um produto", description = "Rota protegida para deletar um produto.")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable Long productId,
             Authentication authentication) {

@@ -5,6 +5,9 @@ import com.umeal.api.order.service.OrderService;
 import com.umeal.api.restaurant.dto.RestaurantCreateDTO;
 import com.umeal.api.restaurant.dto.RestaurantResponseDTO;
 import com.umeal.api.restaurant.service.RestaurantService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/restaurants")
+@Tag(name = "Restaurantes", description = "Endpoints para gerenciamento de restaurantes.")
 public class RestaurantController {
 
     @Autowired
@@ -31,6 +35,7 @@ public class RestaurantController {
     private OrderService orderService;
 
     @PostMapping
+    @Operation(summary = "Cria um novo restaurante", description = "Rota protegida para criar um novo restaurante.")
     public ResponseEntity<RestaurantResponseDTO> createRestaurant(
             @Valid @RequestBody RestaurantCreateDTO dto,
             Authentication authentication) {
@@ -43,6 +48,7 @@ public class RestaurantController {
     }
 
     @GetMapping
+    @Operation(summary = "Lista todos os restaurantes", description = "Rota pública para listar todos os restaurantes.")
     public ResponseEntity<List<RestaurantResponseDTO>> getAllRestaurants() {
         List<RestaurantResponseDTO> restaurants = restaurantService.listAllRestaurants();
         return ResponseEntity.ok(restaurants);
@@ -50,6 +56,7 @@ public class RestaurantController {
 
 
     @GetMapping("/{restaurantId}")
+    @Operation(summary = "Busca detalhes de um restaurante por ID", description = "Rota pública para obter os detalhes de um restaurante específico.")
     public ResponseEntity<RestaurantResponseDTO> getRestaurantById(
             @PathVariable Long restaurantId) {
         RestaurantResponseDTO restaurant = restaurantService.getRestaurantDetails(restaurantId);
