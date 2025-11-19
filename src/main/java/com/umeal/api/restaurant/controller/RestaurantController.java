@@ -34,6 +34,19 @@ public class RestaurantController {
     @Autowired
     private OrderService orderService;
 
+    @GetMapping("/my-restaurant")
+    public ResponseEntity<RestaurantResponseDTO> getMyRestaurant(Authentication authentication) {
+        String email = authentication.getName();
+        
+        RestaurantResponseDTO myRestaurant = restaurantService.getMyRestaurant(email);
+        
+        if (myRestaurant == null) {
+            return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.ok(myRestaurant);
+    }
+
     @PostMapping
     @Operation(summary = "Cria um novo restaurante", description = "Rota protegida para criar um novo restaurante.")
     public ResponseEntity<RestaurantResponseDTO> createRestaurant(
