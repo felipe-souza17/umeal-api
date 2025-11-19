@@ -16,6 +16,13 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.umeal.api.auth.filter.SecurityFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -29,15 +36,37 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Value("${api.security.cors.allowed-origins}")
+    private List<String> allowedOrigins;
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        configuration.setAllowedOrigins(allowedOrigins);
+
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        
+        
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> 
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -48,10 +77,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/restaurants/*/products").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/restaurants").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/restaurants/{id}").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/register-client", "/api/users/register-owner").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/restaurants").hasRole("RESTAURANT_OWNER")
-                        .requestMatchers(HttpMethod.GET, "/api/restaurants/{id}/orders").hasRole("RESTAURANT_OWNER")
+                        .requestMatchers(HttpMethod.GET, "/api/restaurants/{id}/orders", "/api/restaurants/my-restaurant").hasRole("RESTAURANT_OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/orders/{id}/status").hasRole("RESTAURANT_OWNER")
                         .anyRequest().authenticated()
                 )

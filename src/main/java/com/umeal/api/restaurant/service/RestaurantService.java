@@ -76,6 +76,13 @@ public class RestaurantService {
         return dto;
     }
 
+    @Transactional(readOnly = true)
+    public RestaurantResponseDTO getMyRestaurant(String ownerEmail) {
+        return restaurantRepository.findByOwnerEmail(ownerEmail)
+                .map(this::mapToRestaurantResponseDTO)
+                .orElse(null);
+    }
+
     @Transactional
     public RestaurantResponseDTO createRestaurant(RestaurantCreateDTO dto, String ownerEmail) {
         User owner = userRepository.findByEmail(ownerEmail)
